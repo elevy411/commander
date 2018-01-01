@@ -7,6 +7,7 @@ coreCategories = ['Creature','Sorcery','Instant','Artifact','Enchantment','Plane
 categories = list(coreCategories)
 colors = 'aqua black blue fuchsia gray green lime maroon navy olive purple red silver teal white yellow'.upper().split(' ')
 
+
 class button:
   def __init__(self,name,(x,y),cellColor,color='Black',func=None):
     self.name = Cell(x,y).name
@@ -27,6 +28,10 @@ def hello():
 	print 'Hello World!\n'
 	active_cell(home)
 	af()
+
+def resetDic():
+	global deckDic
+	deckDic = {}
 
 def resetCounts():
 	global categories
@@ -49,7 +54,7 @@ def resetCategories():
 deckDic = {}
 def updateDic(cell,valToAdd = None, value = True):
 	global deckDic
-	if cell.value not in deckDic.values() and cell.value != None:
+	if cell.value not in deckDic.keys() and cell.value != None:
 		deckDic[cell.value] = {}
 		deckDic[cell.value]['Count'] = 1
 	if valToAdd != None:
@@ -81,7 +86,9 @@ def toTxtFile():
 
 def recount():
 	global categories,deckDic
+	home.value = 'UPDATING'
 	resetCounts()
+	resetDic()
 	for letter in 'ABCDEFGHIJKL':
 		for cell in Cell('{}6'.format(letter)).vertical_range:
 			refRow = 8
@@ -100,6 +107,7 @@ def recount():
 				i += 1
 		refRow = 8
 	active_cell(home)
+	home.value = 'Running'
 	af()
 
 def clean():
@@ -166,7 +174,7 @@ def makeCmc():
 		if letter != 'L':
 			ref.value = 'CMC{}'.format(i)
 		else:
-			ref.value = 'CMC 11+ or X'
+			ref.value = 'CMC_11+_or_X'
 		format(ref,'Black','center','white')		
 
 def makeTable(): 
@@ -210,6 +218,15 @@ def makeCategories():
 	af()
 	active_cell(home)
 
+def fixSpaces(stringToFix):
+	copy = '' 
+	for x in stringToFix:
+		if x == ' ':
+			copy += '_'
+		else:
+			copy += x
+	return copy
+
 def addCategory():
 	global categories
 	Cell('F2').value = "Insert Category in Cell G2 -->"
@@ -222,7 +239,8 @@ def addCategory():
 		if active_cell() == Cell('G3'):
 			done = True
 			if not Cell('G2').is_empty():
-				categories[len(categories)-1]=Cell('G2').value
+				catToAdd = fixSpaces(Cell('G2').value)
+				categories[len(categories)-1]=catToAdd
 				categories.append('Total')
 				Cell('F2').clear()
 				Cell('F3').clear()
@@ -235,6 +253,11 @@ def addCategory():
 			Cell('F3').clear()
 			Cell('G2').clear()
 			makeCategories()
+
+def test():
+	print 'testing github'
+	print 'super test'
+
 
 def makeStage():
 	clear_sheet()
